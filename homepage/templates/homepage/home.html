@@ -1,0 +1,177 @@
+{% extends "homepage/base.html"%}
+
+{% block content%}
+<html>
+<head>
+    <meta charset=utf-8 />
+    <title>Loading markers from CSV</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.mapbox.com/mapbox.js/v3.3.0/mapbox.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/v3.3.0/mapbox.css' rel='stylesheet' />
+</head>
+
+<body>
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-omnivore/v0.2.0/leaflet-omnivore.min.js'></script>
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css' rel='stylesheet' />
+
+    <style>
+        #geocoder-container > div {
+            min-width: 50%;
+            margin-left: 25%;
+        } 
+    </style>
+
+    <style>
+        .circle {
+        height: 39px;
+        width: 39px;
+        background-color: #ed9ac1;
+        border-radius: 50%;
+        display: inline-block;
+        opacity: 0.5;
+        }
+    </style>
+
+    <style>
+        .outer {
+        height: 20px;
+        width: 20px;
+        background-color: #ed9ac1;
+        border-radius: 50%;
+        display: inline-block;
+        }
+    </style>
+
+    <script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v1.0.0/leaflet.markercluster.js'></script>
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v1.0.0/MarkerCluster.css' rel='stylesheet' />
+    <link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-markercluster/v1.0.0/MarkerCluster.Default.css' rel='stylesheet' />
+
+    <h1>Potential Risk Areas</h1>
+
+    <div id='map' style='width: 750px; height: 500px'></div>
+
+    <script>
+        L.mapbox.accessToken = 'pk.eyJ1IjoidHJldm9ycml6emkiLCJhIjoiY2s4OXJoaWh6MDA5bzNkbzVpNWIxcHpuayJ9.yd-Y-RkiDZatHG6-VD7mfg';
+
+        var geocoder = L.mapbox.geocoderControl('mapbox.places', {
+            autocomplete: true
+        });
+        var map = L.mapbox.map('map')
+        .setView([38, -95], 4)
+        .addLayer(L.mapbox.styleLayer('mapbox://styles/mapbox/light-v10'))
+        .addControl(geocoder);
+
+        var today = new Date();
+        if((today.getMonth() + 1) < 10){
+            if (today.getHours() > 16) {
+                var date = '0' + (today.getMonth()+1) + '-' + (today.getDate()) + '-' + today.getFullYear();
+            } else {
+                var date = '0' + (today.getMonth()+1) + '-' + (today.getDate()-1) + '-' + today.getFullYear();
+            }
+        }
+        else{
+            if (today.getHours() > 16) {
+                var date = (today.getMonth()+1) + '-' + (today.getDate()) + '-' + today.getFullYear();
+            } else {
+                var date = (today.getMonth()+1) + '-' + (today.getDate()-1) + '-' + today.getFullYear();
+            }
+        }
+           console.log(date);
+
+        var runLayer = omnivore.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/03-30-2020.csv')
+        .on('ready', function(e) {
+            var clusterGroup = new L.MarkerClusterGroup({
+                polygonOptions: {
+                fillColor: '#ed9ac1',
+                color: '#ed9ac1',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.5
+                },
+            iconCreateFunction: function(cluster) {
+            var markers = cluster.getAllChildMarkers();
+            var html = '<div class="circle">' +  '</div>';
+                return L.divIcon({ html: html, className: 'myclass', iconSize: L.point(32, 32) });
+            }
+            });
+            e.target.eachLayer(function(layer) {
+                clusterGroup.addLayer(layer);
+            });
+            map.addLayer(clusterGroup);
+
+        runLayer.eachLayer(function(layer) {
+                layer.bindPopup(layer.feature.properties.Combined_Key + "<br>" + "Confirmed: " + layer.feature.properties.Confirmed
+                    + "<br>" + "Deaths: " + layer.feature.properties.Deaths + "<br>" + "Recovered: " + layer.feature.properties.Recovered);
+            });
+        });
+    </script>
+
+    <br>
+
+    <h1>User Reported Cases</h1>
+    
+    {% if user.is_authenticated %}
+        <h5><A href="/report">Report a case here</A></h5>
+    {% else %}
+        <h5><A href="/login">Report a case here</A></h5>
+    {% endif %}
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+    <div id='map2' style='width: 750px; height: 500px'></div>
+    <br>
+    <script type="text/javascript">
+        var myDataList= (("{{ Reports }}").replace(/&(l|g|quo)t;/g, function(a,b){
+                return {
+                    l   : '<',
+                    g   : '>',
+                    quo : '"'
+                }[b];
+            }));
+
+        L.mapbox.accessToken = 'pk.eyJ1IjoidHJldm9ycml6emkiLCJhIjoiY2s4OXJoaWh6MDA5bzNkbzVpNWIxcHpuayJ9.yd-Y-RkiDZatHG6-VD7mfg';
+        var map2 = L.mapbox.map('map2')
+        .setView([38, -95], 4)
+        .addLayer(L.mapbox.styleLayer('mapbox://styles/mapbox/light-v10'));
+        
+        var myDate = "";
+        var myAddress = "";
+        var geocoder = new L.Control.Geocoder.Nominatim();
+
+        for (let i = 20; i < myDataList.length; i++) {
+            if (myDataList[i] !== '>') {
+
+                if (myDataList[i] === ',' || myDataList[i] === ']') {
+                    geocoder.geocode(myAddress, function(results) {
+                        var latLng = new L.LatLng(results[0].center.lat, results[0].center.lng);
+                        var marker = new L.Marker(latLng);
+                        map2.addLayer(marker);
+                        map2.eachLayer(function(layer) {
+                            layer.bindPopup("Active Date: " + myDate);
+                        });
+                    });
+                    i += 10;
+                    myAddress="";                  
+                }
+                if (myDataList[i] === '@') {
+                    myDate = "";
+                    for (let j = 0; j < 10; j++) {
+                        i++;
+                        myDate += myDataList[i];
+                    }
+                } else {
+                    myAddress += myDataList[i];
+                }
+            }
+        }
+        myAddress = "";
+        
+        L.Control.geocoder().addTo(map2);
+
+    </script>
+
+    </body>
+</html>
+
+{% endblock content %} 

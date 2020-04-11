@@ -1,0 +1,94 @@
+{% load static %}
+
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type= "text/css" href="{% static 'homepage/main.css' %}">
+    
+    {% if title %}
+        <title>COVID-19 Tracker - {{ title }} </title>
+    {% else %}
+        <title>COVID-19 Tracker</title>
+    {% endif %}
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <header class="site-header">
+        <nav class="navbar navbar-expand-md navbar-dark bg-info fixed-top">
+          <div class="container">
+            <a class="navbar-brand mr-4" href="/"> <i><b>COVID-19 Tracker</b></i></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarToggle">
+              <div class="navbar-nav mr-auto">
+                <a class="nav-item nav-link" href="/about">About</a>
+                {% if user.is_authenticated %}
+                  <a class="nav-item nav-link" href="/report">Report a case</a>
+                {% else %}
+                  <a class="nav-item nav-link" href="/login">Report a case</a>
+                {% endif %}
+              </div>
+              <!-- Navbar Right Side -->
+              <div class="navbar-nav">
+                {% if user.is_authenticated %}
+                  <a class="nav-item nav-link" href="/logout">Logout</a>
+                {% else %}
+                  <a class="nav-item nav-link" href="/login">Login</a>
+                  <a class="nav-item nav-link" href="/register">Register</a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </nav>
+      </header>
+
+      <main role="main" class="container">
+        <div class="row">
+          <div class="col-md-8">
+            {% if messages %}
+              {% for message in messages %}
+                <div class='alert alert-{{ message.tags }}'>
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+            {% block content %}{% endblock %}
+          </div>
+          
+          <div class="col-md-4">
+            <div class="content-section">
+              <h3>COVID-19 Resources</h3>
+              <p class='text-muted'>Help and information on COVID-19
+                <ul class="list-group">
+                  <li class="list-group-item list-group-item-light"><A HREF="https://www.cdc.gov/coronavirus/2019-ncov/symptoms-testing/index.html#cdc-chat-bot-open">CDC Symptoms and Testing</A></li>
+                  <li class="list-group-item list-group-item-light"><A HREF="https://www.cdph.ca.gov/Programs/CID/DCDC/Pages/Immunization/ncov2019.aspx">California Department of Public Health</A></li>
+                  <li class="list-group-item list-group-item-light"><A HREF="https://www.who.int/emergencies/diseases/novel-coronavirus-2019/global-research-on-novel-coronavirus-2019-ncov">World Health Organization on COVID-19</A> </li>
+                  <li class="list-group-item list-group-item-light"><A HREF="https://www.youtube.com/watch?v=9Ay4u7OYOhA">CDC video on potential prevention</A></li>
+                </ul>
+              </p>
+            </div>
+          </div>
+        </div>
+      </main>
+    
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>
+

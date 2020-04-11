@@ -1,0 +1,16 @@
+{% extends "homepage/base.html"%}
+
+{% block content %}
+
+<h1>Report a Case</h1>
+<br>
+<h5>If you have tested positive or are experiencing symptoms of coronavirus, we ask if you can report the last <i><b>public</b></i> places you have been to in order to spread awareness in your area:</h5>
+<br>
+<form class="report-form" method="POST" action="">
+    {%csrf_token%}
+    {{form.as_p}}
+    <button type="submit" class="btn btn-info btn-block">Submit</button>
+    <br>
+    <br>
+</form>
+{% endblock content %}
