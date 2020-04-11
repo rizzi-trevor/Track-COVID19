@@ -1,1 +1,1 @@
-web: gunicorn COVID2020.wsgi 
+web: gunicorn Covid2020.wsgi 
