@@ -1,0 +1,1 @@
+web: gunicorn COVID2020.wsgi 
