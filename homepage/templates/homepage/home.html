@@ -34,17 +34,6 @@
     </style>
 
     <style>
-        .circleTwo {
-        height: 39px;
-        width: 39px;
-        background-color: #e61074;
-        border-radius: 50%;
-        display: inline-block;
-        opacity: 0.5;
-        }
-    </style>
-
-    <style>
         .outer {
         height: 20px;
         width: 20px;
@@ -85,7 +74,7 @@
 
            console.log(date);
 
-        var runLayer = omnivore.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_US.csv')
+        var runLayer = omnivore.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/03-30-2020.csv')
         .on('ready', function(e) {
             var clusterGroup = new L.MarkerClusterGroup({
                 polygonOptions: {
@@ -107,49 +96,13 @@
             map.addLayer(clusterGroup);
 
         runLayer.eachLayer(function(layer) {
-                layer.bindPopup(layer.feature.properties.Admin2 + ", " + layer.feature.properties.Province_State + "<br>" + "Confirmed: " + layer.feature.properties['4/11/20']
+                layer.bindPopup(layer.feature.properties.Combined_Key + "<br>"  + "Confirmed: " + layer.feature.properties.Confirmed
                     + "<br>" + "Deaths: " + layer.feature.properties.Deaths + "<br>" + "Recovered: " + layer.feature.properties.Recovered);
                     //console.log(layer.feature.properties);
             });
         }).on('error', function(e){
             console.log("FAILURE");
         });
-
-
-
-        var secondLayer = omnivore.csv('https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv')
-        .on('ready', function(e) {
-            var clusterGroup = new L.MarkerClusterGroup({
-                polygonOptions: {
-                fillColor: '##f50576',
-                color: '##f50576',
-                weight: 2,
-                opacity: 1,
-                fillOpacity: 0.5
-                },
-            iconCreateFunction: function(cluster) {
-            var markers = cluster.getAllChildMarkers();
-            //markers = [properties: {'marker-color' : '#3bb2d0'}];
-            var html = '<div class="circleTwo">' +  '</div>';
-                return L.divIcon({ html: html, className: 'myclass', iconSize: L.point(32, 32) });
-            }
-            });
-            e.target.eachLayer(function(layer) {
-                clusterGroup.addLayer(layer);
-            });
-            map.addLayer(clusterGroup);
-
-        secondLayer.eachLayer(function(layer) {
-                layer.bindPopup(layer.feature.properties['Province/State']  +  " " + layer.feature.properties['Country/Region'] + "<br>" + "Confirmed: " + layer.feature.properties['4/11/20']
-                    + "<br>" + "Deaths: " + layer.feature.properties.Deaths + "<br>" + "Recovered: " + layer.feature.properties.Recovered);
-                    //console.log(layer.feature.properties);
-            });
-        }).on('error', function(e){
-            console.log("FAILURE");
-        });
-
-
-
 
     </script>
 
